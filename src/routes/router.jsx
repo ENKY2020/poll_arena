@@ -1,0 +1,46 @@
+import { createBrowserRouter } from 'react-router-dom'
+import Home from '../pages/Home'
+import LiveResults from '../pages/LiveResults'
+import Categories from '../pages/Categories'
+import HowItWorks from '../pages/HowItWorks'
+import Login from '../pages/Login'
+import Signup from '../pages/Signup'
+import Settings from '../pages/Settings'
+import Admin from '../pages/Admin'
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Home />,
+  },
+  {
+    path: '/live-results',
+    element: <LiveResults />,
+  },
+  {
+    path: '/categories',
+    element: <Categories />,
+  },
+  {
+    path: '/how-it-works',
+    element: <HowItWorks />,
+  },
+  {
+    path: '/login',
+    element: <Login />,
+  },
+  {
+    path: '/signup',
+    element: <Signup />,
+  },
+  {
+    path: '/settings',
+    element: <Settings />,
+  },
+  {
+    path: '/admin',
+    element: <Admin />,
+  },
+])
+
+export default router
