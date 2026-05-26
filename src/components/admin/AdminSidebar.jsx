@@ -1,5 +1,3 @@
-import { NavLink } from 'react-router-dom'
-
 function AdminSidebar() {
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId)
@@ -12,87 +10,49 @@ function AdminSidebar() {
     }
   }
 
+  const navItems = [
+    ['Dashboard', 'dashboard-section', '🏠'],
+    ['Create Poll', 'create-poll-section', '➕'],
+    ['Poll Management', 'poll-management-section', '📊'],
+    ['News Center', 'news-section', '📰'],
+    ['Ads & Sponsors', 'ads-section', '📢'],
+    ['Daily Snapshot', 'daily-snapshot-section', '📌'],
+    ['Categories', 'categories-section', '🏷️'],
+    ['Users', 'users-section', '👥'],
+    ['Analytics', 'analytics-section', '📈'],
+    ['Settings', 'settings-section', '⚙️'],
+  ]
+
   return (
     <aside className="admin-sidebar">
-      <div className="admin-brand">
-        <div className="admin-logo">✓</div>
+      <div className="admin-brand upgraded-admin-brand">
+        <img src="/pollarena1.jpeg" alt="Poll Arena" />
 
         <div>
           <h2>POLL ARENA</h2>
-          <p>Your Voice, Your Choice</p>
+          <p>Control Center</p>
         </div>
       </div>
 
-      <nav className="admin-nav">
-        <button
-          type="button"
-          className="admin-link"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        >
-          Dashboard
-        </button>
-
-        <div className="admin-group">
-          <button type="button" className="admin-link active">
-            Polls
+      <nav className="admin-nav upgraded-admin-nav">
+        {navItems.map(([label, sectionId, icon]) => (
+          <button
+            key={sectionId}
+            type="button"
+            className="admin-link upgraded-admin-link"
+            onClick={() => scrollToSection(sectionId)}
+          >
+            <span>{icon}</span>
+            {label}
           </button>
-
-          <div className="admin-submenu">
-            <button
-              type="button"
-              className="admin-sublink"
-              onClick={() => scrollToSection('create-poll-section')}
-            >
-              Create New Poll
-            </button>
-
-            <button
-              type="button"
-              className="admin-sublink"
-              onClick={() => scrollToSection('poll-management-section')}
-            >
-              Poll Management
-            </button>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="admin-link"
-          onClick={() => scrollToSection('categories-section')}
-        >
-          Categories
-        </button>
-
-        <button
-          type="button"
-          className="admin-link"
-          onClick={() => scrollToSection('users-section')}
-        >
-          Users
-        </button>
-
-        <button
-          type="button"
-          className="admin-link"
-          onClick={() => scrollToSection('analytics-section')}
-        >
-          Analytics
-        </button>
-
-        <button
-          type="button"
-          className="admin-link"
-          onClick={() => scrollToSection('settings-section')}
-        >
-          Settings
-        </button>
+        ))}
       </nav>
 
       <div className="admin-sidebar-footer">
-        <div className="impact-card">
-          <h4>Make an Impact!</h4>
-          <p>Every poll creates insight and better decisions.</p>
+        <div className="impact-card upgraded-impact-card">
+          <span>Live Intelligence</span>
+          <h4>Make an Impact</h4>
+          <p>Every poll creates insight, strategy, and better decisions.</p>
         </div>
       </div>
     </aside>

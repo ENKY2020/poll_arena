@@ -94,3 +94,40 @@ export async function updatePollStatus(pollId, status) {
 
   return data[0]
 }
+
+/* 🔥 NEW: DELETE POLL (WITH CLEANUP) */
+export async function deletePoll(pollId) {
+  const { data: options, error: fetchOptionsError } = await supabase
+    .from('poll_options')
+    .select('id')
+    .eq('poll_id', pollId)
+
+  if (fetchOptionsError) throw fetchOptionsError
+
+  const optionIds = (options || []).map((option) => option.id)
+
+  if (optionIds.length > 0) {
+    const { error: votesError } = await supabase
+      .from('votes')
+      .delete()
+      .in('option_id', optionIds)
+
+    if (votesError) throw votesError
+  }
+
+  const { error: optionsError } = await supabase
+    .from('poll_options')
+    .delete()
+    .eq('poll_id', pollId)
+
+  if (optionsError) throw optionsError
+
+  const { error: pollError } = await supabase
+    .from('polls')
+    .delete()
+    .eq('id', pollId)
+
+  if (pollError) throw pollError
+
+  return true
+}

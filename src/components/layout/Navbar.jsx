@@ -1,79 +1,97 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 function Navbar() {
-  const { user, loading, isAdmin, signOut } = useAuth()
   const navigate = useNavigate()
+  const { user, isAdmin, signOut } = useAuth()
 
-  console.log('NAVBAR USER:', user)
-  console.log('NAVBAR EMAIL:', user?.email)
-  console.log('NAVBAR IS ADMIN:', isAdmin)
-  console.log('NAVBAR LOADING:', loading)
-
-  const handleLogout = async () => {
-    const result = await signOut()
-
-    if (result?.success) {
-      navigate('/login')
-    }
+  const goToLogin = (path = '/') => {
+    navigate(`/login?returnTo=${encodeURIComponent(path)}`)
   }
 
-  const displayName =
-    user?.user_metadata?.full_name ||
-    user?.user_metadata?.name ||
-    user?.email?.split('@')[0] ||
-    'User'
+  const protectLink = (event, path) => {
+    if (user) return
+    event.preventDefault()
+    goToLogin(path)
+  }
+
+  const handleLogout = async () => {
+    await signOut()
+    navigate('/login')
+  }
 
   return (
-    <header className="navbar">
-      <div className="logo-wrap">
-        <div className="logo-mark">PA</div>
+    <header className="navbar compact-navbar">
+      <Link to="/" className="brand navbar-brand">
+        <img
+          src="/pollarena1.jpeg"
+          alt="Poll Arena"
+          className="navbar-logo"
+        />
 
-        <div className="logo-text">
-          <h2>Poll Arena</h2>
+        <div className="navbar-brand-text">
+          <strong>Poll Arena</strong>
           <span>Real-Time Public Opinion</span>
         </div>
-      </div>
+      </Link>
 
-      <nav className="nav-links">
+      <nav className="nav-links navbar-links">
         <NavLink to="/">Home</NavLink>
-        <NavLink to="/live-results">Live Results</NavLink>
-        <NavLink to="/categories">Categories</NavLink>
         <NavLink to="/how-it-works">How It Works</NavLink>
+        <NavLink to="/about-us">About Us</NavLink>
 
-        {isAdmin && (
+        <NavLink
+          to="/live-results"
+          onClick={(event) => protectLink(event, '/live-results')}
+        >
+          Live Results
+        </NavLink>
+
+        <NavLink
+          to="/categories"
+          onClick={(event) => protectLink(event, '/categories')}
+        >
+          Categories
+        </NavLink>
+
+        <NavLink
+          to="/news-center"
+          onClick={(event) => protectLink(event, '/news-center')}
+        >
+          News Center
+        </NavLink>
+
+        {user && <NavLink to="/settings">Settings</NavLink>}
+
+        {user && isAdmin && (
           <NavLink to="/admin" className="admin-nav-link">
             Admin Panel
           </NavLink>
         )}
       </nav>
 
-      <div className="nav-actions">
-        {loading ? (
-          <span className="nav-user-text">Checking session...</span>
-        ) : user ? (
-          <>
-            <span className="nav-user-text">Hi, {displayName}</span>
-
-            {isAdmin && (
-              <NavLink to="/admin" className="btn btn-secondary">
-                Dashboard
-              </NavLink>
-            )}
-
-            <button className="btn btn-ghost" onClick={handleLogout}>
-              Logout
-            </button>
-          </>
+      <div className="nav-actions navbar-actions">
+        {!user ? (
+          <button
+            type="button"
+            className="btn btn-primary nav-login-btn"
+            onClick={() => goToLogin(window.location.pathname + window.location.search)}
+          >
+            Login
+          </button>
         ) : (
           <>
-            <NavLink to="/login" className="btn btn-ghost">
-              Login
-            </NavLink>
+            <span className="nav-user">
+              {user.user_metadata?.full_name || user.email}
+            </span>
 
-            <NavLink to="/signup" className="btn btn-primary">
-              Sign Up
-            </NavLink>
+            <button
+              type="button"
+              className="btn btn-secondary nav-login-btn"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
           </>
         )}
       </div>

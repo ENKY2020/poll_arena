@@ -1,18 +1,20 @@
-import { useEffect, useState } from 'react'
-import { getPolls, updatePollStatus } from '../../services/pollService'
+import { useEffect, useMemo, useState } from 'react'
+import { deletePoll, getPolls, updatePollStatus } from '../../services/pollService'
 
 function PollManager() {
   const [polls, setPolls] = useState([])
+  const [activeTab, setActiveTab] = useState('all')
   const [loading, setLoading] = useState(true)
-  const [updatingId, setUpdatingId] = useState(null)
+  const [workingId, setWorkingId] = useState(null)
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
 
   const loadPolls = async () => {
     try {
       setLoading(true)
       setError('')
       const data = await getPolls()
-      setPolls(data)
+      setPolls(data || [])
     } catch (err) {
       setError(err.message || 'Failed to load polls.')
     } finally {
@@ -24,62 +26,126 @@ function PollManager() {
     loadPolls()
   }, [])
 
+  const counts = useMemo(() => {
+    return {
+      all: polls.length,
+      active: polls.filter((poll) => poll.status === 'active').length,
+      draft: polls.filter((poll) => poll.status === 'draft').length,
+      closed: polls.filter((poll) => poll.status === 'closed').length,
+    }
+  }, [polls])
+
+  const visiblePolls = useMemo(() => {
+    if (activeTab === 'all') return polls
+    return polls.filter((poll) => poll.status === activeTab)
+  }, [activeTab, polls])
+
+  const getPollVoteCount = (poll) => {
+    return (poll.poll_options || []).reduce(
+      (total, option) => total + (option.votes?.length || 0),
+      0
+    )
+  }
+
   const handleStatusChange = async (pollId, status) => {
     try {
-      setUpdatingId(pollId)
+      setWorkingId(pollId)
       setError('')
+      setMessage('')
 
       await updatePollStatus(pollId, status)
       await loadPolls()
+
+      setMessage(`Poll moved to ${status}.`)
     } catch (err) {
       setError(err.message || 'Failed to update poll status.')
     } finally {
-      setUpdatingId(null)
+      setWorkingId(null)
     }
   }
 
-  const activeCount = polls.filter((poll) => poll.status === 'active').length
-  const draftCount = polls.filter((poll) => poll.status === 'draft').length
-  const closedCount = polls.filter((poll) => poll.status === 'closed').length
+  const handleDeletePoll = async (poll) => {
+    const confirmed = window.confirm(
+      `Delete this poll permanently?\n\n"${poll.question}"\n\nThis cannot be undone.`
+    )
+
+    if (!confirmed) return
+
+    try {
+      setWorkingId(poll.id)
+      setError('')
+      setMessage('')
+
+      await deletePoll(poll.id)
+      await loadPolls()
+
+      setMessage('Poll deleted successfully.')
+    } catch (err) {
+      setError(err.message || 'Failed to delete poll.')
+    } finally {
+      setWorkingId(null)
+    }
+  }
+
+  const tabs = [
+    { key: 'all', label: 'All Polls', count: counts.all },
+    { key: 'active', label: 'Active', count: counts.active },
+    { key: 'draft', label: 'Drafts', count: counts.draft },
+    { key: 'closed', label: 'Closed', count: counts.closed },
+  ]
 
   return (
-    <div className="poll-card poll-manager-card">
+    <section className="poll-card poll-manager-card">
       <div className="poll-manager-header">
         <div>
           <h3>Poll Management</h3>
           <p className="hero-text">
-            Manage drafts, publish polls, close polls, and preview poll images.
+            Manage drafts, publish polls, close polls, reopen polls, and delete old closed polls.
           </p>
         </div>
 
-       <button
-  type="button"
-  className="btn btn-secondary"
-  onClick={() => {
-    document
-      .getElementById('create-poll-section')
-      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }}
->
-  + Create New Poll
-</button>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => {
+            document
+              .getElementById('create-poll-section')
+              ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }}
+        >
+          + Create New Poll
+        </button>
       </div>
 
-      <div className="poll-tabs">
-        <span className="active">All Polls {polls.length}</span>
-        <span>● Active {activeCount}</span>
-        <span>● Drafts {draftCount}</span>
-        <span>● Closed {closedCount}</span>
+      <div className="poll-tabs admin-filter-tabs">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            className={activeTab === tab.key ? 'active' : ''}
+            onClick={() => setActiveTab(tab.key)}
+          >
+            {tab.label} <span>{tab.count}</span>
+          </button>
+        ))}
       </div>
 
-      {loading && <p className="hero-text">Loading polls...</p>}
+      {message && <p className="success-message">{message}</p>}
       {error && <p className="auth-error">{error}</p>}
+      {loading && <p className="hero-text">Loading polls...</p>}
 
-      {!loading && !error && polls.length === 0 && (
-        <p className="hero-text">No polls created yet.</p>
+      {!loading && !error && visiblePolls.length === 0 && (
+        <div className="empty-admin-state">
+          <h4>No polls found</h4>
+          <p>
+            {activeTab === 'all'
+              ? 'Create your first poll to begin collecting opinions.'
+              : `No ${activeTab} polls available right now.`}
+          </p>
+        </div>
       )}
 
-      {!loading && polls.length > 0 && (
+      {!loading && visiblePolls.length > 0 && (
         <div className="poll-table-wrap">
           <table className="poll-table">
             <thead>
@@ -87,6 +153,7 @@ function PollManager() {
                 <th>Poll</th>
                 <th>Category</th>
                 <th>Status</th>
+                <th>Votes</th>
                 <th>Options</th>
                 <th>Created</th>
                 <th>Actions</th>
@@ -94,16 +161,17 @@ function PollManager() {
             </thead>
 
             <tbody>
-              {polls.map((poll) => {
+              {visiblePolls.map((poll) => {
                 const options = [...(poll.poll_options || [])].sort(
-                  (a, b) => a.position - b.position
+                  (a, b) => (a.position || 0) - (b.position || 0)
                 )
 
-                const isUpdating = updatingId === poll.id
+                const isWorking = workingId === poll.id
+                const totalVotes = getPollVoteCount(poll)
 
                 return (
                   <tr key={poll.id}>
-                    <td>
+                    <td className="poll-title-cell">
                       <strong>{poll.question}</strong>
 
                       <div className="admin-option-preview-row">
@@ -111,13 +179,16 @@ function PollManager() {
                           <div className="admin-option-preview" key={option.id}>
                             <div className="admin-option-thumb">
                               {option.image_url ? (
-                             <img
-  src={option.image_url?.trim()}
-  alt={option.option_text}
-  onError={() => {
-    console.error('FAILED ADMIN IMAGE URL:', option.image_url)
-  }}
-/>
+                                <img
+                                  src={option.image_url?.trim()}
+                                  alt={option.option_text}
+                                  onError={() => {
+                                    console.error(
+                                      'FAILED ADMIN IMAGE URL:',
+                                      option.image_url
+                                    )
+                                  }}
+                                />
                               ) : (
                                 <span>{option.option_text?.charAt(0)}</span>
                               )}
@@ -137,46 +208,60 @@ function PollManager() {
                       </span>
                     </td>
 
+                    <td>
+                      <strong>{totalVotes}</strong>
+                    </td>
+
                     <td>{options.length}</td>
 
                     <td>{new Date(poll.created_at).toLocaleDateString()}</td>
 
                     <td>
-                      <div className="poll-actions">
+                      <div className="poll-actions refined-actions">
                         {poll.status === 'draft' && (
                           <button
                             type="button"
-                            onClick={() =>
-                              handleStatusChange(poll.id, 'active')
-                            }
-                            disabled={isUpdating}
+                            className="action-btn publish"
+                            onClick={() => handleStatusChange(poll.id, 'active')}
+                            disabled={isWorking}
                           >
-                            {isUpdating ? 'Publishing...' : 'Publish'}
+                            {isWorking ? 'Publishing...' : 'Publish'}
                           </button>
                         )}
 
                         {poll.status === 'active' && (
                           <button
                             type="button"
-                            onClick={() =>
-                              handleStatusChange(poll.id, 'closed')
-                            }
-                            disabled={isUpdating}
+                            className="action-btn close"
+                            onClick={() => handleStatusChange(poll.id, 'closed')}
+                            disabled={isWorking}
                           >
-                            {isUpdating ? 'Closing...' : 'Close'}
+                            {isWorking ? 'Closing...' : 'Close'}
                           </button>
                         )}
 
                         {poll.status === 'closed' && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleStatusChange(poll.id, 'active')
-                            }
-                            disabled={isUpdating}
-                          >
-                            {isUpdating ? 'Reopening...' : 'Reopen'}
-                          </button>
+                          <>
+                            <button
+                              type="button"
+                              className="action-btn reopen"
+                              onClick={() =>
+                                handleStatusChange(poll.id, 'active')
+                              }
+                              disabled={isWorking}
+                            >
+                              {isWorking ? 'Reopening...' : 'Reopen'}
+                            </button>
+
+                            <button
+                              type="button"
+                              className="action-btn delete"
+                              onClick={() => handleDeletePoll(poll)}
+                              disabled={isWorking}
+                            >
+                              {isWorking ? 'Deleting...' : 'Delete'}
+                            </button>
+                          </>
                         )}
                       </div>
                     </td>
@@ -187,7 +272,7 @@ function PollManager() {
           </table>
         </div>
       )}
-    </div>
+    </section>
   )
 }
 
