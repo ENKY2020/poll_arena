@@ -30,7 +30,7 @@ function Navbar() {
         />
 
         <div className="navbar-brand-text">
-          <strong>Poll Arena</strong>
+          <strong>Poll Arena International</strong>
           <span>Real-Time Public Opinion</span>
         </div>
       </Link>
