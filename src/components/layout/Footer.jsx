@@ -99,7 +99,7 @@ function Footer() {
           className="footer-logo-img"
         />
 
-        <h3>Poll Arena</h3>
+        <h3>Poll Arena International</h3>
         <p>Real-Time Public Opinion</p>
         <strong>Your voice. Your choice. Your impact.</strong>
         <small>© 2026 Poll Arena International. All rights reserved.</small>
