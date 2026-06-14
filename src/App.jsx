@@ -1,7 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-
+import BookTable from './pages/BookTable'
 import MainLayout from './components/layout/MainLayout'
 import AppLoader from './components/common/AppLoader'
 import NotFound from './components/common/NotFound'
@@ -80,7 +80,9 @@ function App() {
       <MainLayout>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/live-results" element={<LiveResults />} />
+         <Route path="/live-results" element={<LiveResults />} />
+         <Route path="/poll/:slug" element={<LiveResults />} />
+          <Route path="/book-table" element={<BookTable />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/news" element={<NewsCenter />} />
           <Route path="/news-center" element={<NewsCenter />} />

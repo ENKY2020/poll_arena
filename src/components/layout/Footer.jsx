@@ -112,7 +112,25 @@ function Footer() {
         <Link to="/categories">Categories</Link>
         <Link to="/how-it-works">How It Works</Link>
         <Link to="/about-us">About Us</Link>
+        <Link to="/book-table" className="footer-book-link">
+  🎟 Reserve Event Table →
+</Link>
       </div>
+      <div className="footer-event-card">
+  <h4>Upcoming Events</h4>
+
+  <p>
+    Reserve seats and tables for awards, forums,
+    conferences and networking events.
+  </p>
+
+  <Link
+    to="/book-table"
+    className="footer-event-btn"
+  >
+    🎟 Book a Table →
+  </Link>
+</div>
 
       <div className="footer-column">
         <h4>Company</h4>
