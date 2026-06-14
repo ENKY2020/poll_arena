@@ -426,7 +426,13 @@ const getPollShareUrl = (poll, platform = 'direct') => {
                               />
                             </div>
 
-                            <small>{optionVotes} votes</small>
+                           <small className="poll-sentiment">
+  {Number(percentage) >= 60
+    ? '📈 Leading'
+    : Number(percentage) >= 40
+    ? '⚡ Competitive'
+    : '🌱 Emerging'}
+</small>
                           </div>
                         </div>
                       )

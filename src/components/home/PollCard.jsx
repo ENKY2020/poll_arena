@@ -225,14 +225,28 @@ const buildShareUrl = () => {
                   />
                 </div>
 
-                <small>{optionVotes} votes</small>
+               <small className="poll-sentiment">
+  {Number(percentage) >= 60
+    ? '🏆 Front Runner'
+    : Number(percentage) >= 40
+    ? '⚡ Neck and Neck'
+    : '📊 Building Support'}
+</small>
               </div>
             </button>
           )
         })}
       </div>
 
-      <p className="hero-text">Total votes: {totalVotes}</p>
+      <p className="hero-text">
+  {totalVotes >= 100
+    ? '🔥 High Activity'
+    : totalVotes >= 25
+    ? '📈 Growing Discussion'
+    : totalVotes >= 5
+    ? '⚡ Active Poll'
+    : '🌱 New Poll'}
+</p>
 
       <button
         type="button"
