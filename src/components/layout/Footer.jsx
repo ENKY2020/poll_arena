@@ -112,25 +112,8 @@ function Footer() {
         <Link to="/categories">Categories</Link>
         <Link to="/how-it-works">How It Works</Link>
         <Link to="/about-us">About Us</Link>
-        <Link to="/book-table" className="footer-book-link">
-  🎟 Reserve Event Table →
-</Link>
+        
       </div>
-      <div className="footer-event-card">
-  <h4>Upcoming Events</h4>
-
-  <p>
-    Reserve seats and tables for awards, forums,
-    conferences and networking events.
-  </p>
-
-  <Link
-    to="/book-table"
-    className="footer-event-btn"
-  >
-    🎟 Book a Table →
-  </Link>
-</div>
 
       <div className="footer-column">
         <h4>Company</h4>
@@ -140,7 +123,21 @@ function Footer() {
         <Link to="/about-us#presence">Our Presence</Link>
         <Link to="/about-us#contact">Contact Us</Link>
       </div>
+<div className="footer-event-card">
+  <h4>Upcoming Events</h4>
 
+  <p>
+    Reserve seats and tables for awards,
+    conferences and networking events.
+  </p>
+
+  <Link
+    to="/book-table"
+    className="footer-event-btn"
+  >
+    🎟 Reserve Your Event Table →
+  </Link>
+</div>
       <div className="footer-column">
         <h4>Connect With Us</h4>
 

@@ -4,6 +4,7 @@ const pollSelect = `
   id,
   slug,
   question,
+  thumbnail_url,
   category,
   status,
   created_at,
@@ -35,16 +36,20 @@ const slug = question
   .replace(/[^a-z0-9]+/g, '-')
   .replace(/^-|-$/g, '')
 
-  const { data: poll, error: pollError } = await supabase
-    .from('polls')
-    .insert({
-      question: question.trim(),
-      slug,
-      category,
-      status,
-    })
-    .select()
-    .single()
+const thumbnailUrl =
+  cleanOptions.find(option => option.image_url)?.image_url || null
+
+const { data: poll, error: pollError } = await supabase
+  .from('polls')
+  .insert({
+    question: question.trim(),
+    slug,
+    category,
+    status,
+    thumbnail_url: thumbnailUrl,
+  })
+  .select()
+  .single()
 
   if (pollError) throw pollError
 
