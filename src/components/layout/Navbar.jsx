@@ -60,6 +60,9 @@ function Navbar() {
         >
           News Center
         </NavLink>
+        <NavLink to="/book-table">
+  Events
+</NavLink>
 
         {user && <NavLink to="/settings">Settings</NavLink>}
 

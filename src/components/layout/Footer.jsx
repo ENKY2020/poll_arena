@@ -112,7 +112,7 @@ function Footer() {
         <Link to="/categories">Categories</Link>
         <Link to="/how-it-works">How It Works</Link>
         <Link to="/about-us">About Us</Link>
-        
+        <Link to="/book-table">Events</Link>
       </div>
 
       <div className="footer-column">
