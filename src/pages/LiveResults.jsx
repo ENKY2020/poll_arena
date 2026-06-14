@@ -305,10 +305,18 @@ const getPollShareUrl = (poll, platform = 'direct') => {
           <strong>{polls.length}</strong>
         </div>
 
-        <div className="poll-card result-summary-card">
-          <span>Total Votes</span>
-          <strong>{analytics.totalVotes}</strong>
-        </div>
+      <div className="poll-card result-summary-card">
+  <span>Public Activity</span>
+  <strong>
+    {analytics.totalVotes >= 100
+      ? '🔥 Trending'
+      : analytics.totalVotes >= 25
+      ? '📈 Growing'
+      : analytics.totalVotes >= 5
+      ? '⚡ Active'
+      : '🌱 New'}
+  </strong>
+</div>
 
         <div className="poll-card result-summary-card">
           <span>Top Category</span>
