@@ -1,0 +1,77 @@
+.book-table-page {
+min-height: 100vh;
+background: #f5f7fb;
+padding: 60px 20px;
+}
+
+.book-table-container {
+max-width: 850px;
+margin: 0 auto;
+background: #ffffff;
+padding: 40px;
+border-radius: 16px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.book-table-container h1 {
+color: #0b3f91;
+margin-bottom: 10px;
+}
+
+.book-table-container p {
+color: #555;
+line-height: 1.7;
+margin-bottom: 25px;
+}
+
+.event-contact-box {
+background: #eef5ff;
+border-left: 4px solid #0b3f91;
+padding: 15px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+
+.book-table-container form {
+display: flex;
+flex-direction: column;
+gap: 16px;
+}
+
+.book-table-container input,
+.book-table-container select,
+.book-table-container textarea {
+width: 100%;
+padding: 14px;
+border: 1px solid #d7dce5;
+border-radius: 8px;
+font-size: 15px;
+}
+
+.book-table-container input:focus,
+.book-table-container select:focus,
+.book-table-container textarea:focus {
+outline: none;
+border-color: #0b3f91;
+}
+
+.book-table-container button {
+background: #0b3f91;
+color: white;
+border: none;
+padding: 15px;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 600;
+font-size: 16px;
+}
+
+.book-table-container button:hover {
+opacity: 0.92;
+}
+
+@media (max-width: 768px) {
+.book-table-container {
+padding: 25px;
+}
+}

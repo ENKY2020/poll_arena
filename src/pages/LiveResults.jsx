@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getActivePolls } from '../services/pollService'
+import { useParams } from 'react-router-dom'
+import {
+  getActivePolls,
+  getPollBySlug,
+} from '../services/pollService'
 import { trackShare } from '../services/analyticService'
 import { supabase } from '../services/supabaseClient'
 import AppLoader from '../components/common/AppLoader'
@@ -14,26 +18,33 @@ function LiveResults() {
   const [shareLoading, setShareLoading] = useState('')
   const [error, setError] = useState('')
   const [lastUpdated, setLastUpdated] = useState(null)
+  const { slug } = useParams()
 
   const loadResults = async (isRefresh = false) => {
-    try {
-      setError('')
-      isRefresh ? setRefreshing(true) : setLoading(true)
+  try {
+    setError('')
+    isRefresh ? setRefreshing(true) : setLoading(true)
 
+    if (slug) {
+      const poll = await getPollBySlug(slug)
+      setPolls(poll ? [poll] : [])
+    } else {
       const data = await getActivePolls()
       setPolls(data || [])
-      setLastUpdated(new Date())
-    } catch (err) {
-      setError(err.message || 'Failed to load live results.')
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
     }
-  }
 
-  useEffect(() => {
-    loadResults()
-  }, [])
+    setLastUpdated(new Date())
+  } catch (err) {
+    setError(err.message || 'Failed to load live results.')
+  } finally {
+    setLoading(false)
+    setRefreshing(false)
+  }
+}
+
+ useEffect(() => {
+  loadResults()
+}, [slug])
 
   const goToLogin = () => {
     const returnTo = encodeURIComponent(
@@ -68,17 +79,13 @@ function LiveResults() {
     return ((optionVotes / totalVotes) * 100).toFixed(1)
   }
 
-  const getPollShareUrl = (poll, platform = 'direct') => {
-    const params = new URLSearchParams({
-      poll: poll.id,
-      category: poll.category || 'All',
-      utm_source: platform,
-      utm_medium: 'social_share',
-      utm_campaign: 'pollarena_live_results_share',
-    })
-
-    return `${window.location.origin}/live-results?${params.toString()}`
+const getPollShareUrl = (poll, platform = 'direct') => {
+  if (!poll.slug) {
+    return `${window.location.origin}/live-results`
   }
+
+  return `${window.location.origin}/poll/${poll.slug}`
+}
 
   const getPollShareText = (poll) => {
     const totalVotes = getPollVotes(poll)
@@ -107,7 +114,7 @@ function LiveResults() {
 
       if (navigator.share) {
         await navigator.share({
-          title: 'Poll Arena Live Results',
+          title: poll.question,
           text: shareText,
           url: shareUrl,
         })

@@ -2,6 +2,7 @@ import { supabase } from './supabaseClient'
 
 const pollSelect = `
   id,
+  slug,
   question,
   category,
   status,
@@ -28,10 +29,17 @@ export async function createPoll({ question, category, status, options }) {
   if (!question.trim()) throw new Error('Poll question is required.')
   if (cleanOptions.length < 2) throw new Error('A poll needs at least 2 options.')
 
+const slug = question
+  .trim()
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-|-$/g, '')
+
   const { data: poll, error: pollError } = await supabase
     .from('polls')
     .insert({
       question: question.trim(),
+      slug,
       category,
       status,
     })
@@ -78,7 +86,17 @@ export async function getActivePolls() {
 
   return data || []
 }
+export async function getPollBySlug(slug) {
+  const { data, error } = await supabase
+    .from('polls')
+    .select(pollSelect)
+    .eq('slug', slug)
+    .single()
 
+  if (error) throw error
+
+  return data
+}
 export async function updatePollStatus(pollId, status) {
   const { data, error } = await supabase
     .from('polls')

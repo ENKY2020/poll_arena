@@ -37,16 +37,13 @@ function PollCard({ poll, onVoteSuccess }) {
     window.location.href = `/login?returnTo=${returnTo}`
   }
 
-  const buildShareUrl = (platform = 'direct') => {
-    const params = new URLSearchParams({
-      poll: poll.id,
-      utm_source: platform,
-      utm_medium: 'social_share',
-      utm_campaign: 'pollarena_poll_share',
-    })
-
-    return `${window.location.origin}/live-results?${params.toString()}`
+const buildShareUrl = () => {
+  if (!poll.slug) {
+    return `${window.location.origin}/live-results`
   }
+
+  return `${window.location.origin}/poll/${poll.slug}`
+}
 
   const buildShareText = () => {
     return `Vote and view live results on Poll Arena:\n"${poll.question}"`
@@ -125,7 +122,7 @@ function PollCard({ poll, onVoteSuccess }) {
 
       if (navigator.share) {
         await navigator.share({
-          title: 'Poll Arena',
+          title: poll.question,
           text: shareText,
           url: shareUrl,
         })
