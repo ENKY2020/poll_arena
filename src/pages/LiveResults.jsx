@@ -391,10 +391,27 @@ const getPollShareUrl = (poll, platform = 'direct') => {
                     </p>
                   </div>
 
-                  <div className="live-total-box">
-                    <strong>{pollTotalVotes}</strong>
-                    <span>votes</span>
-                  </div>
+<div className="live-total-box">
+  <strong>
+    {pollTotalVotes >= 100
+      ? '🔥'
+      : pollTotalVotes >= 25
+      ? '📈'
+      : pollTotalVotes >= 5
+      ? '⚡'
+      : '🌱'}
+  </strong>
+
+  <span>
+    {pollTotalVotes >= 100
+      ? 'Trending'
+      : pollTotalVotes >= 25
+      ? 'Growing'
+      : pollTotalVotes >= 5
+      ? 'Active'
+      : 'New'}
+  </span>
+</div>
                 </div>
 
                 <div className="live-result-body">
