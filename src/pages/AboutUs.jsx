@@ -187,22 +187,22 @@ function AboutUs() {
             <p>
               <strong>Dubai:</strong>{' '}
               <a
-                href="https://wa.me/971529646311"
+                href="https://wa.me/9715296463113"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                +971 52 964 6311
+                +971 52 964 63113
               </a>
             </p>
 
             <p>
               <strong>USA:</strong>{' '}
               <a
-                href="https://wa.me/16024222177"
+                href="https://wa.me/160242221772"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                +1 602 422 2177
+                +1 602 422 21772
               </a>
             </p>
 
