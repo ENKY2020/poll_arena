@@ -262,7 +262,15 @@ const getPollShareUrl = (poll, platform = 'direct') => {
           })}
         </svg>
 
-        <span className="live-pie-center">{totalVotes}</span>
+      <span className="live-pie-center">
+  {totalVotes >= 100
+    ? '🔥'
+    : totalVotes >= 25
+    ? '📈'
+    : totalVotes >= 5
+    ? '⚡'
+    : '🌱'}
+</span>
       </div>
     )
   }
