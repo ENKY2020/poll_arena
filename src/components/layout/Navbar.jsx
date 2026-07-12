@@ -1,9 +1,13 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useLanguage } from '../../context/LanguageContext'
 
 function Navbar() {
   const navigate = useNavigate()
   const { user, isAdmin, signOut } = useAuth()
+  const { t } = useLanguage()
+
+
 
   const goToLogin = (path = '/') => {
     navigate(`/login?returnTo=${encodeURIComponent(path)}`)
@@ -36,40 +40,49 @@ function Navbar() {
       </Link>
 
       <nav className="nav-links navbar-links">
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/how-it-works">How It Works</NavLink>
-        <NavLink to="/about-us">About Us</NavLink>
-
-        <NavLink
-          to="/live-results"
-          onClick={(event) => protectLink(event, '/live-results')}
-        >
-          Live Results
-        </NavLink>
-
-        <NavLink
-          to="/categories"
-          onClick={(event) => protectLink(event, '/categories')}
-        >
-          Categories
-        </NavLink>
-
-        <NavLink
-          to="/news-center"
-          onClick={(event) => protectLink(event, '/news-center')}
-        >
-          News Center
-        </NavLink>
-        <NavLink to="/book-table">
-  Events
+        <NavLink to="/">{t.home}</NavLink>
+        <NavLink to="/how-it-works">
+  {t.howItWorks}
+</NavLink>
+        <NavLink to="/about-us">
+  {t.aboutUs}
 </NavLink>
 
-        {user && <NavLink to="/settings">Settings</NavLink>}
+       <NavLink
+  to="/live-results"
+  onClick={(event) => protectLink(event, '/live-results')}
+>
+  {t.liveResults}
+</NavLink>
+
+<NavLink
+  to="/categories"
+  onClick={(event) => protectLink(event, '/categories')}
+>
+  {t.categories}
+</NavLink>
+
+       <NavLink
+  to="/news-center"
+  onClick={(event) => protectLink(event, '/news-center')}
+>
+  {t.newsCenter}
+</NavLink>
+
+       <NavLink to="/book-table">
+  {t.events}
+</NavLink>
+
+        {user && (
+  <NavLink to="/settings">
+    {t.settings}
+  </NavLink>
+)}
 
         {user && isAdmin && (
-          <NavLink to="/admin" className="admin-nav-link">
-            Admin Panel
-          </NavLink>
+         <NavLink to="/admin" className="admin-nav-link">
+  {t.adminPanel}
+</NavLink>
         )}
       </nav>
 
@@ -80,7 +93,7 @@ function Navbar() {
             className="btn btn-primary nav-login-btn"
             onClick={() => goToLogin(window.location.pathname + window.location.search)}
           >
-            Login
+            {t.login}
           </button>
         ) : (
           <>
@@ -93,7 +106,7 @@ function Navbar() {
               className="btn btn-secondary nav-login-btn"
               onClick={handleLogout}
             >
-              Logout
+              {t.logout}
             </button>
           </>
         )}

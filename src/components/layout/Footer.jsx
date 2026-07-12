@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { subscribeToNewsletter } from '../../services/analyticService'
+import { useLanguage } from '../../context/LanguageContext'
+
 
 function Footer() {
   const [deferredPrompt, setDeferredPrompt] = useState(null)
@@ -8,6 +10,7 @@ function Footer() {
   const [email, setEmail] = useState('')
   const [newsletterStatus, setNewsletterStatus] = useState('')
   const [newsletterLoading, setNewsletterLoading] = useState(false)
+  const { t } = useLanguage()   
 
   const socialLinks = [
     {
@@ -100,46 +103,45 @@ function Footer() {
         />
 
         <h3>Poll Arena International</h3>
-        <p>Real-Time Public Opinion</p>
-        <strong>Your voice. Your choice. Your impact.</strong>
-        <small>© 2026 Poll Arena International. All rights reserved.</small>
+         <p>{t.tagline}</p>
+        <strong>{t.footerMotto}</strong>
+      <small>{t.copyright}</small>
       </div>
 
       <div className="footer-column">
-        <h4>Quick Links</h4>
-        <Link to="/">Home</Link>
-        <Link to="/live-results">Live Results</Link>
-        <Link to="/categories">Categories</Link>
-        <Link to="/how-it-works">How It Works</Link>
-        <Link to="/about-us">About Us</Link>
-        <Link to="/book-table">Events</Link>
+        <h4>{t.quickLinks}</h4>
+        <Link to="/">{t.home}</Link>
+        <Link to="/live-results">{t.liveResults}</Link>
+        <Link to="/categories">{t.categories}</Link>
+        <Link to="/how-it-works">{t.howItWorks}</Link>
+       <Link to="/about-us">{t.aboutUs}</Link>
+        <Link to="/book-table">{t.events}</Link>
       </div>
 
       <div className="footer-column">
-        <h4>Company</h4>
-        <Link to="/about-us">About Us</Link>
-        <Link to="/about-us#mission">Our Mission</Link>
-        <Link to="/about-us#vision">Our Vision</Link>
-        <Link to="/about-us#presence">Our Presence</Link>
-        <Link to="/about-us#contact">Contact Us</Link>
+       <h4>{t.company}</h4>
+        <Link to="/about-us">{t.aboutUs}</Link>
+        <Link to="/about-us#mission">{t.ourMission}</Link>
+        <Link to="/about-us#vision">{t.ourVision}</Link>
+        <Link to="/about-us#presence">{t.ourPresence}</Link>
+        <Link to="/about-us#contact">{t.contactUs}</Link>
       </div>
 <div className="footer-event-card">
-  <h4>Upcoming Events</h4>
+  <h4>{t.upcomingEvents}</h4>
 
   <p>
-    Reserve seats and tables for awards,
-    conferences and networking events.
+    {t.reserveSeatsDescription}
   </p>
 
   <Link
     to="/book-table"
     className="footer-event-btn"
   >
-    🎟 Reserve Your Event Table →
+   🎟 {t.reserveEventTable} →
   </Link>
 </div>
       <div className="footer-column">
-        <h4>Connect With Us</h4>
+       <h4>{t.connectWithUs}</h4>
 
         {socialLinks.map((social) => (
           <a
@@ -158,8 +160,8 @@ function Footer() {
           <img src="/pollarena1.jpeg" alt="Poll Arena app" />
         </div>
 
-        <h4>Get the App</h4>
-        <p>Add Poll Arena to your home screen for fast access.</p>
+       <h4>{t.getApp}</h4>
+        <p>{t.getAppDescription}</p>
 
         <button
           type="button"
@@ -167,24 +169,24 @@ function Footer() {
           onClick={handleInstallApp}
           disabled={isInstalled}
         >
-          {isInstalled ? 'App Installed' : 'Install App'}
+         {isInstalled ? t.appInstalled : t.installApp}
         </button>
 
         <form className="footer-newsletter" onSubmit={handleNewsletterSubmit}>
-          <h4>Get Weekly Insights</h4>
-          <p>Receive poll trends, public opinion updates, and platform news.</p>
+          <h4>{t.weeklyInsights}</h4>
+          <p>{t.weeklyInsightsDescription}</p>
 
           <div className="footer-newsletter-row">
             <input
               type="email"
-              placeholder="Enter your email"
+              placeholder={t.emailPlaceholder}
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
             />
 
             <button type="submit" disabled={newsletterLoading}>
-              {newsletterLoading ? 'Joining...' : 'Subscribe'}
+              {newsletterLoading ? t.joining : t.subscribe}
             </button>
           </div>
 

@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../services/supabaseClient'
+import { useLanguage } from '../context/LanguageContext'
+
+const languages = [
+  { code: 'en', name: 'English 🇬🇧' },
+  { code: 'sw', name: 'Kiswahili 🇰🇪' },
+  { code: 'fr', name: 'Français 🇫🇷' },
+  { code: 'ar', name: 'العربية 🇸🇦' },
+  { code: 'es', name: 'Español 🇪🇸' },
+  { code: 'pt', name: 'Português 🇵🇹' },
+]
 
 const countries = ['Kenya', 'Uganda', 'Tanzania', 'Rwanda', 'Nigeria', 'South Africa', 'United States', 'United Arab Emirates', 'Other']
 
@@ -23,16 +33,18 @@ const kenyaCounties = [
 
 function Settings() {
   const [user, setUser] = useState(null)
-  const [profile, setProfile] = useState({
-    full_name: '',
-    country: 'Kenya',
-    county: '',
-    newsletter_opt_in: false,
-  })
+const [profile, setProfile] = useState({
+  full_name: '',
+  country: 'Kenya',
+  county: '',
+  preferred_language: 'en',
+  newsletter_opt_in: false,
+})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const { changeLanguage } = useLanguage()
 
   useEffect(() => {
     loadProfile()
@@ -69,12 +81,14 @@ function Settings() {
         setProfile({
           full_name: data.full_name || user.user_metadata?.full_name || '',
           country: data.country || 'Kenya',
+          preferred_language: data.preferred_language || 'en',
           county: data.county || '',
           newsletter_opt_in: Boolean(data.newsletter_opt_in),
         })
       } else {
         setProfile({
           full_name: user.user_metadata?.full_name || '',
+          preferred_language: 'en',
           country: 'Kenya',
           county: '',
           newsletter_opt_in: false,
@@ -114,6 +128,7 @@ function Settings() {
         user_id: user.id,
         email: user.email,
         full_name: profile.full_name.trim(),
+        preferred_language: profile.preferred_language,
         country: profile.country,
         county: profile.county,
         newsletter_opt_in: profile.newsletter_opt_in,
@@ -127,17 +142,20 @@ function Settings() {
       if (upsertError) throw upsertError
 
       if (profile.newsletter_opt_in && user.email) {
-        await supabase.from('newsletter_subscribers').upsert(
-          {
-            email: user.email.toLowerCase(),
-            source: 'settings',
-            status: 'active',
-          },
-          { onConflict: 'email' }
-        )
-      }
+  await supabase.from('newsletter_subscribers').upsert(
+    {
+      email: user.email.toLowerCase(),
+      source: 'settings',
+      status: 'active',
+    },
+    { onConflict: 'email' }
+  )
+}
 
-      setMessage('Profile preferences saved successfully.')
+changeLanguage(profile.preferred_language)
+
+setMessage('Profile preferences saved successfully.')
+
     } catch (err) {
       console.error('Profile save failed:', err)
       setError(err.message || 'Failed to save settings.')
@@ -240,7 +258,31 @@ function Settings() {
               />
             )}
           </div>
+<div className="form-group">
+  <label htmlFor="preferred_language">
+    🌍 Application Language
+  </label>
 
+  <select
+    id="preferred_language"
+    name="preferred_language"
+    value={profile.preferred_language}
+    onChange={handleChange}
+  >
+    {languages.map((language) => (
+      <option
+        key={language.code}
+        value={language.code}
+      >
+        {language.name}
+      </option>
+    ))}
+  </select>
+
+  <small className="settings-helper">
+    Choose the language used throughout Poll Arena.
+  </small>
+</div>
           <label className="settings-check-row">
             <input
               type="checkbox"

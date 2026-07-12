@@ -17,6 +17,7 @@ import SignUp from './pages/SignUp'
 import Settings from './pages/Settings'
 import Admin from './pages/Admin'
 import AuthCallback from './pages/AuthCallback'
+import { LanguageProvider } from './context/LanguageContext'
 
 import { trackTrafficSource } from './services/analyticService'
 
@@ -73,7 +74,8 @@ function App() {
     return <AppLoader message="Preparing the arena for you..." />
   }
 
-  return (
+return (
+  <LanguageProvider>
     <BrowserRouter>
       <TrafficSourceTracker />
 
@@ -97,8 +99,10 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </MainLayout>
-    </BrowserRouter>
-  )
+     </BrowserRouter>
+  </LanguageProvider>
+)
+
 }
 
 export default App
