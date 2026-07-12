@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   getActivePolls,
   getPollBySlug,
@@ -19,6 +19,7 @@ function LiveResults() {
   const [error, setError] = useState('')
   const [lastUpdated, setLastUpdated] = useState(null)
   const { slug } = useParams()
+  const navigate = useNavigate()
 
   const loadResults = async (isRefresh = false) => {
   try {
@@ -491,6 +492,13 @@ const getPollShareUrl = (poll, platform = 'direct') => {
                 </div>
 
                 <div className="live-share-row">
+                  <button
+  type="button"
+  className="btn btn-success"
+  onClick={() => navigate(`/?poll=${poll.slug}`)}
+>
+  🗳 Participate
+</button>
                   <button
                     type="button"
                     className="btn btn-primary"

@@ -690,3 +690,23 @@
     padding: 6px 9px;
   }
 }
+.highlight-poll {
+  animation: pollHighlight 2.5s ease;
+}
+
+@keyframes pollHighlight {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(31, 91, 196, 0);
+  }
+
+  35% {
+    transform: scale(1.02);
+    box-shadow: 0 0 35px rgba(31, 91, 196, 0.45);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+}

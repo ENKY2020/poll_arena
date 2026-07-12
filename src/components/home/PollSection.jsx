@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import PollCard from './PollCard'
 import { getActivePolls } from '../../services/pollService'
 import {
@@ -61,7 +61,9 @@ function isAdActive(ad) {
 
 function PollSection() {
   const navigate = useNavigate()
+  const location = useLocation()
   const pollScrollRef = useRef(null)
+  const pollRefs = useRef({})
 
   const [polls, setPolls] = useState([])
   const [ads, setAds] = useState([])
@@ -177,6 +179,33 @@ function PollSection() {
     loadHomeContent()
   }, [])
 
+  useEffect(() => {
+  if (!polls.length) return
+
+  const params = new URLSearchParams(location.search)
+  const slug = params.get('poll')
+
+  if (!slug) return
+
+  const element = pollRefs.current[slug]
+
+  if (!element) return
+
+  setTimeout(() => {
+    element.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest',
+    })
+
+    element.classList.add('highlight-poll')
+
+    setTimeout(() => {
+      element.classList.remove('highlight-poll')
+    }, 2500)
+  }, 400)
+}, [polls, location.search])
+
   return (
     <section className="poll-section" id="live-polls">
       <div className="section-header">
@@ -225,13 +254,19 @@ function PollSection() {
           {!loading && !error && polls.length > 0 && (
             <div className="home-poll-carousel">
               <div className="poll-grid poll-scroll-track" ref={pollScrollRef}>
-                {polls.map((poll) => (
-                  <PollCard
-                    key={poll.id}
-                    poll={poll}
-                    onVoteSuccess={loadHomeContent}
-                  />
-                ))}
+               {polls.map((poll) => (
+  <div
+    key={poll.id}
+    ref={(el) => {
+      pollRefs.current[poll.slug] = el
+    }}
+  >
+    <PollCard
+      poll={poll}
+      onVoteSuccess={loadHomeContent}
+    />
+  </div>
+))}
               </div>
             </div>
           )}
