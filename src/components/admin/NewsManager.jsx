@@ -232,6 +232,7 @@ function NewsManager() {
             <option value="Real Estate">Real Estate</option>
             <option value="Technology">Technology</option>
             <option value="Education">Education</option>
+              <option value="Entertainment">Entertainment</option>
           </select>
         </div>
 
